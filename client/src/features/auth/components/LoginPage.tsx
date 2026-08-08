@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../services/authApi';
 import { useAuth } from '../context/AuthContext';
-import { Briefcase, Mail, Lock, Loader2, ShieldCheck } from 'lucide-react';
+import { Briefcase, Mail, Lock, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './LoginPage.css';
 
@@ -17,18 +17,35 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (loginEmail: string, loginPass: string) => {
+    setEmail(loginEmail);
+    setPassword(loginPass);
     setLoading(true);
+    setErrorMessage(null);
+
     try {
       const response = await authApi.login(loginEmail, loginPass);
-      login(response.token, response.user);
-      toast.success(`Logged in as ${response.user.name} (${response.user.role})`);
-      navigate('/');
+      if (response && response.token && response.user) {
+        login(response.token, response.user);
+        toast.success(`Logged in as ${response.user.name} (${response.user.role})`);
+        navigate('/');
+      } else {
+        throw new Error('Invalid server response');
+      }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed. Please check credentials.');
+      let rawMsg = error.response?.data?.message || error.message || 'Login failed. Please check backend connection.';
+      if (Array.isArray(rawMsg)) {
+        rawMsg = rawMsg.join(', ');
+      }
+      const finalMsg = typeof rawMsg === 'string' ? rawMsg : 'Invalid credentials or server error';
+      
+      setErrorMessage(finalMsg);
+      toast.error(finalMsg);
     } finally {
       setLoading(false);
     }
@@ -36,6 +53,10 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      setErrorMessage('Please enter email and password');
+      return;
+    }
     handleLogin(email, password);
   };
 
@@ -43,17 +64,25 @@ const LoginPage: React.FC = () => {
     <div className="login-container flex items-center justify-center p-4">
       <div className="login-background"></div>
       <div className="card login-card">
-        <div className="login-header flex flex-col items-center gap-4">
+        <div className="login-header flex flex-col items-center gap-3">
           <div className="logo-container">
             <Briefcase size={32} className="text-accent" />
           </div>
           <h1 className="login-title">ERP CRM Portal</h1>
-          <p className="text-secondary text-sm">Sign in to your enterprise account</p>
+          <p className="text-secondary text-xs">Sign in to your enterprise account</p>
         </div>
+
+        {/* Error Alert Box */}
+        {errorMessage && (
+          <div className="p-3 mb-4 rounded-lg bg-danger-bg border border-danger/30 text-danger text-xs flex items-start gap-2 animate-fade-in">
+            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            <div className="flex-1 font-semibold">{errorMessage}</div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email</label>
+            <label>Email Address</label>
             <div className="input-with-icon">
               <Mail size={18} className="input-icon" />
               <input 
@@ -65,6 +94,7 @@ const LoginPage: React.FC = () => {
               />
             </div>
           </div>
+
           <div className="form-group">
             <label>Password</label>
             <div className="input-with-icon">
@@ -78,13 +108,14 @@ const LoginPage: React.FC = () => {
               />
             </div>
           </div>
+
           <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
             {loading ? <Loader2 size={18} className="spinner" /> : 'Sign In'}
           </button>
         </form>
 
         {/* Demo Credentials Quick Fill Section */}
-        <div className="demo-section mt-6 pt-6 border-t border-primary">
+        <div className="demo-section mt-6 pt-5 border-t border-primary">
           <div className="flex items-center gap-2 text-xs font-semibold text-secondary mb-3">
             <ShieldCheck size={14} className="text-accent" />
             <span>QUICK DEMO ACCOUNTS (1-CLICK LOGIN)</span>
@@ -94,16 +125,13 @@ const LoginPage: React.FC = () => {
               <button
                 key={demo.role}
                 type="button"
-                className="demo-btn p-2 rounded-md text-left transition-all"
+                className="demo-btn p-2.5 rounded-lg text-left transition-all hover:scale-[1.02]"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: `1px solid ${demo.color}33`,
+                  background: 'var(--bg-glass)',
+                  border: `1px solid ${demo.color}40`,
                 }}
-                onClick={() => {
-                  setEmail(demo.email);
-                  setPassword(demo.pass);
-                  handleLogin(demo.email, demo.pass);
-                }}
+                onClick={() => handleLogin(demo.email, demo.pass)}
+                disabled={loading}
               >
                 <div className="text-xs font-bold" style={{ color: demo.color }}>
                   {demo.role}
