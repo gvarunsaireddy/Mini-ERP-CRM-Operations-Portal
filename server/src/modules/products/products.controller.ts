@@ -15,7 +15,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  // All authenticated can view
+  @Roles('Admin', 'Warehouse', 'Accounts')
   findAll(@Query() pagination: PaginationQueryDto) {
     return this.productsService.findAll(pagination);
   }
@@ -27,6 +27,7 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @Roles('Admin', 'Warehouse', 'Accounts')
   findById(@Param('id') id: string) {
     return this.productsService.findById(id);
   }
@@ -38,7 +39,7 @@ export class ProductsController {
   }
 
   @Get(':id/stock-movements')
-  @Roles('Admin', 'Warehouse')
+  @Roles('Admin', 'Warehouse', 'Accounts')
   getStockMovements(@Param('id') id: string, @Query() pagination: PaginationQueryDto) {
     return this.productsService.getStockMovements(id, pagination);
   }

@@ -5,8 +5,10 @@ import { customerApi } from '../services/customerApi';
 import { Customer, CustomerFollowUp } from '../../../shared/types';
 import StatusBadge from '../../../shared/components/StatusBadge';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../auth/context/AuthContext';
 
 const CustomerDetailPage: React.FC = () => {
+  const { hasRole } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -17,6 +19,8 @@ const CustomerDetailPage: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [nextDate, setNextDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const canManageCustomer = hasRole(['Admin', 'Sales']);
 
   useEffect(() => {
     if (id) {
@@ -85,9 +89,11 @@ const CustomerDetailPage: React.FC = () => {
           </div>
         </div>
         
-        <Link to={`/customers/${id}/edit`} className="btn btn-secondary">
-          <Edit size={16} /> Edit Profile
-        </Link>
+        {canManageCustomer && (
+          <Link to={`/customers/${id}/edit`} className="btn btn-secondary">
+            <Edit size={16} /> Edit Profile
+          </Link>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -162,9 +168,11 @@ const CustomerDetailPage: React.FC = () => {
               <h2 className="text-base font-bold text-primary">CRM Follow-up Notes Timeline</h2>
               <p className="text-xs text-muted">Track sales interactions, call logs and next follow-up dates</p>
             </div>
-            <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary text-xs">
-              <Plus size={16} /> Record Follow-up
-            </button>
+            {canManageCustomer && (
+              <button onClick={() => setShowFollowUpModal(true)} className="btn btn-primary text-xs">
+                <Plus size={16} /> Record Follow-up
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col gap-4">

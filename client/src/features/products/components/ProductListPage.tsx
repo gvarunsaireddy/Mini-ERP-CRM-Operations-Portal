@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Search, Filter, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Filter, AlertTriangle, Eye } from 'lucide-react';
 import { productApi } from '../services/productApi';
 import { Product } from '../../../shared/types';
 import { useDebounce } from '../../../shared/hooks/useDebounce';
+import { useAuth } from '../../auth/context/AuthContext';
 import { DataTable } from '../../../shared/components/DataTable';
 import Pagination from '../../../shared/components/Pagination';
 import toast from 'react-hot-toast';
 
 const ProductListPage: React.FC = () => {
+  const { hasRole } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -18,6 +20,8 @@ const ProductListPage: React.FC = () => {
   
   const debouncedSearch = useDebounce(search, 500);
   const navigate = useNavigate();
+
+  const canManageProduct = hasRole(['Admin', 'Warehouse']);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -57,10 +61,23 @@ const ProductListPage: React.FC = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Products & Inventory</h1>
-        <Link to="/products/new" className="btn btn-primary">
-          <Plus size={18} /> Add Product
-        </Link>
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold">Products & Inventory</h1>
+            {!canManageProduct && (
+              <span className="badge badge-inactive flex items-center gap-1">
+                <Eye size={12} /> Read-Only
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-secondary mt-0.5">Warehouse catalog and live stock movements</p>
+        </div>
+
+        {canManageProduct && (
+          <Link to="/products/new" className="btn btn-primary">
+            <Plus size={18} /> Add Product
+          </Link>
+        )}
       </div>
 
       <div className="card p-4">

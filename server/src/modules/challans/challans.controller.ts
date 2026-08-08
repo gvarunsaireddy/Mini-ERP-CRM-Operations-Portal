@@ -13,7 +13,7 @@ export class ChallansController {
   constructor(private readonly challansService: ChallansService) {}
 
   @Get()
-  @Roles('Admin', 'Sales', 'Accounts')
+  @Roles('Admin', 'Sales', 'Warehouse', 'Accounts')
   findAll(@Query() pagination: PaginationQueryDto) {
     return this.challansService.findAll(pagination);
   }
@@ -25,7 +25,7 @@ export class ChallansController {
   }
 
   @Get(':id')
-  @Roles('Admin', 'Sales', 'Accounts')
+  @Roles('Admin', 'Sales', 'Warehouse', 'Accounts')
   findById(@Param('id') id: string) {
     return this.challansService.findById(id);
   }

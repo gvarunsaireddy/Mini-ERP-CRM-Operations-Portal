@@ -7,16 +7,15 @@ import './Sidebar.css';
 const Sidebar: React.FC = () => {
   const { user, logout, hasRole } = useAuth();
 
-  const navItems = [
-    { to: '/', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
-    { to: '/customers', icon: <Users size={18} />, label: 'Customer CRM' },
-    { to: '/products', icon: <Package size={18} />, label: 'Inventory & Stock' },
-    { to: '/challans', icon: <FileText size={18} />, label: 'Sales Challans' },
+  const allNavItems = [
+    { to: '/', icon: <LayoutDashboard size={18} />, label: 'Dashboard', roles: ['Admin', 'Sales', 'Warehouse', 'Accounts'] },
+    { to: '/customers', icon: <Users size={18} />, label: 'Customer CRM', roles: ['Admin', 'Sales', 'Warehouse', 'Accounts'] },
+    { to: '/products', icon: <Package size={18} />, label: 'Inventory & Stock', roles: ['Admin', 'Warehouse', 'Accounts'] },
+    { to: '/challans', icon: <FileText size={18} />, label: 'Sales Challans', roles: ['Admin', 'Sales', 'Warehouse', 'Accounts'] },
+    { to: '/users', icon: <UserCog size={18} />, label: 'User Management', roles: ['Admin'] },
   ];
 
-  if (hasRole(['Admin'])) {
-    navItems.push({ to: '/users', icon: <UserCog size={18} />, label: 'User Management' });
-  }
+  const allowedNavItems = allNavItems.filter(item => hasRole(item.roles));
 
   return (
     <aside className="sidebar">
@@ -31,7 +30,7 @@ const Sidebar: React.FC = () => {
       </div>
       
       <nav className="sidebar-nav">
-        {navItems.map((item) => (
+        {allowedNavItems.map((item) => (
           <NavLink 
             key={item.to} 
             to={item.to} 

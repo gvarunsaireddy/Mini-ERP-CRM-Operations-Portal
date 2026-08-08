@@ -7,8 +7,10 @@ import StatusBadge from '../../../shared/components/StatusBadge';
 import { DataTable } from '../../../shared/components/DataTable';
 import Pagination from '../../../shared/components/Pagination';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../auth/context/AuthContext';
 
 const ProductDetailPage: React.FC = () => {
+  const { hasRole } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
@@ -20,6 +22,8 @@ const ProductDetailPage: React.FC = () => {
   const [showStockModal, setShowStockModal] = useState(false);
   const [stockForm, setStockForm] = useState<{ quantity: number; movementType: 'IN' | 'OUT'; reason: string }>({ quantity: 0, movementType: 'IN', reason: '' });
   const [submitting, setSubmitting] = useState(false);
+
+  const canManageProduct = hasRole(['Admin', 'Warehouse']);
 
   useEffect(() => {
     if (id) {
@@ -100,9 +104,11 @@ const ProductDetailPage: React.FC = () => {
           <Link to="/products" className="btn btn-ghost p-2 rounded-full"><ArrowLeft size={20} /></Link>
           <h1 className="text-2xl font-bold">Product Details</h1>
         </div>
-        <Link to={`/products/${product.id}/edit`} className="btn btn-secondary">
-          <Edit size={16} /> Edit
-        </Link>
+        {canManageProduct && (
+          <Link to={`/products/${product.id}/edit`} className="btn btn-secondary">
+            <Edit size={16} /> Edit
+          </Link>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -146,9 +152,11 @@ const ProductDetailPage: React.FC = () => {
         <div className="card flex flex-col gap-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold text-lg">Inventory Status</h3>
-            <button onClick={() => setShowStockModal(true)} className="btn btn-primary btn-sm">
-              <Plus size={16} /> Adjust Stock
-            </button>
+            {canManageProduct && (
+              <button onClick={() => setShowStockModal(true)} className="btn btn-primary btn-sm">
+                <Plus size={16} /> Adjust Stock
+              </button>
+            )}
           </div>
           
           <div className={`p-6 rounded-xl flex flex-col items-center justify-center border ${isLowStock ? 'bg-warning-bg border-warning' : 'bg-glass border-primary'}`}>

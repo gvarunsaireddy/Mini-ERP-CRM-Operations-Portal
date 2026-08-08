@@ -15,7 +15,7 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Get()
-  @Roles('Admin', 'Sales')
+  @Roles('Admin', 'Sales', 'Warehouse', 'Accounts')
   findAll(@Query() pagination: PaginationQueryDto) {
     return this.customersService.findAll(pagination);
   }
@@ -27,7 +27,7 @@ export class CustomersController {
   }
 
   @Get(':id')
-  @Roles('Admin', 'Sales')
+  @Roles('Admin', 'Sales', 'Warehouse', 'Accounts')
   findById(@Param('id') id: string) {
     return this.customersService.findById(id);
   }
@@ -49,7 +49,7 @@ export class CustomersController {
   }
 
   @Get(':id/followups')
-  @Roles('Admin', 'Sales')
+  @Roles('Admin', 'Sales', 'Warehouse', 'Accounts')
   getFollowUps(@Param('id') id: string) {
     return this.customersService.getFollowUps(id);
   }

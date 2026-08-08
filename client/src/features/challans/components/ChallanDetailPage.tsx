@@ -6,13 +6,18 @@ import { SalesChallan } from '../../../shared/types';
 import StatusBadge from '../../../shared/components/StatusBadge';
 import toast from 'react-hot-toast';
 
+import { useAuth } from '../../auth/context/AuthContext';
+
 const ChallanDetailPage: React.FC = () => {
+  const { hasRole } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [challan, setChallan] = useState<SalesChallan | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  const canConfirmChallan = hasRole(['Admin', 'Sales']);
 
   useEffect(() => {
     if (id) fetchChallan();
@@ -158,7 +163,7 @@ const ChallanDetailPage: React.FC = () => {
         </div>
 
         {/* Action Buttons for Draft Status */}
-        {challan.status === 'Draft' && (
+        {challan.status === 'Draft' && canConfirmChallan && (
           <div className="flex gap-3 justify-end pt-6 border-t border-primary hide-on-print">
             <button 
               className="btn btn-secondary text-danger hover:bg-danger-bg" 
