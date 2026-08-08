@@ -68,26 +68,24 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="login-container flex items-center justify-center p-4">
+    <div className="login-container p-4">
       <div className="login-background"></div>
       <div className="card login-card">
         <div className="login-header flex flex-col items-center gap-3">
           <div className="logo-container">
-            <Briefcase size={32} className="text-accent" />
+            <Briefcase size={28} className="text-accent" />
           </div>
-          <h1 className="login-title">ERP CRM Portal</h1>
+          <h1 className="login-title text-gradient">ERP CRM Portal</h1>
           <p className="text-secondary text-xs">
-            {isSignUp ? 'Create a new employee account' : 'Sign in to your enterprise account'}
+            {isSignUp ? 'Register a new enterprise account' : 'Sign in to access your operations dashboard'}
           </p>
         </div>
 
-        {/* Auth Mode Toggle Tabs (Sign In / Sign Up) */}
-        <div className="flex rounded-lg bg-glass p-1 mb-5 border border-primary">
+        {/* Auth Mode Toggle Tabs (Sign In / Register Account) */}
+        <div className="auth-tabs">
           <button
             type="button"
-            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1.5 ${
-              !isSignUp ? 'bg-accent text-white shadow-sm' : 'text-secondary hover:text-primary'
-            }`}
+            className={`auth-tab ${!isSignUp ? 'active' : ''}`}
             onClick={() => {
               setIsSignUp(false);
               setErrorMessage(null);
@@ -97,9 +95,7 @@ const LoginPage: React.FC = () => {
           </button>
           <button
             type="button"
-            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1.5 ${
-              isSignUp ? 'bg-accent text-white shadow-sm' : 'text-secondary hover:text-primary'
-            }`}
+            className={`auth-tab ${isSignUp ? 'active' : ''}`}
             onClick={() => {
               setIsSignUp(true);
               setErrorMessage(null);
@@ -116,8 +112,8 @@ const LoginPage: React.FC = () => {
             <div className="flex-1 font-semibold">
               {errorMessage}
               {!isSignUp && errorMessage.toLowerCase().includes('invalid credentials') && (
-                <div className="mt-1 font-normal text-[11px]">
-                  Don't have an account yet? Click <strong>"Register Account"</strong> above to sign up!
+                <div className="mt-1.5 font-normal text-[11px] text-secondary">
+                  Don't have an account yet? Click <strong className="text-accent cursor-pointer" onClick={() => setIsSignUp(true)}>"Register Account"</strong> above to sign up!
                 </div>
               )}
             </div>
@@ -135,7 +131,7 @@ const LoginPage: React.FC = () => {
                   type="text" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Varun Sai Reddy"
+                  placeholder="John Doe"
                   required={isSignUp}
                 />
               </div>
@@ -150,7 +146,7 @@ const LoginPage: React.FC = () => {
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={isSignUp ? "varunsai@gmail.com" : "admin@erp.com"}
+                placeholder={isSignUp ? "user@company.com" : "admin@erp.com"}
                 required
               />
             </div>
@@ -173,16 +169,16 @@ const LoginPage: React.FC = () => {
           {/* Role Selection (Only shown during Sign Up) */}
           {isSignUp && (
             <div className="form-group animate-fade-in">
-              <label>Role</label>
+              <label>Assigned Role</label>
               <select 
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full p-2.5 rounded-lg bg-input border border-primary text-sm text-primary"
+                className="role-select"
               >
-                <option value="Sales">Sales Rep</option>
-                <option value="Warehouse">Warehouse Mgr</option>
-                <option value="Accounts">Accounts Dept</option>
-                <option value="Admin">Admin</option>
+                <option value="Sales">Sales Rep (CRM & Sales Orders)</option>
+                <option value="Warehouse">Warehouse Mgr (Inventory & Stock)</option>
+                <option value="Accounts">Accounts Dept (Financial Audits)</option>
+                <option value="Admin">Admin (Full System Access)</option>
               </select>
             </div>
           )}
@@ -200,8 +196,8 @@ const LoginPage: React.FC = () => {
 
         {/* Demo Credentials Section (Fills in fields, requires user to click Sign In) */}
         {!isSignUp && (
-          <div className="demo-section mt-6 pt-5 border-t border-primary">
-            <div className="flex items-center gap-2 text-xs font-semibold text-secondary mb-3">
+          <div className="demo-section mt-5 pt-4 border-t border-primary">
+            <div className="flex items-center gap-2 text-xs font-semibold text-secondary mb-2.5">
               <ShieldCheck size={14} className="text-accent" />
               <span>SELECT DEMO CREDENTIALS</span>
             </div>
@@ -210,7 +206,7 @@ const LoginPage: React.FC = () => {
                 <button
                   key={demo.role}
                   type="button"
-                  className="demo-btn p-2.5 rounded-lg text-left transition-all hover:scale-[1.02]"
+                  className="demo-btn p-2 rounded-lg text-left transition-all"
                   style={{
                     background: 'var(--bg-glass)',
                     border: `1px solid ${demo.color}40`,
