@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (for production-like setup)
+  db:
+    image: postgres:15-alpine
+    container_name: erp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: erp_crm
+      POSTGRES_USER: erp_user
+      POSTGRES_PASSWORD: erp_password_2024
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erp_user -d erp_crm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: erp_server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      JWT_SECRET: erp-super-secret-key-2024
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: erp_user
+      DB_PASSWORD: erp_password_2024
+      DB_DATABASE: erp_crm
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Frontend (Nginx serving built React app)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: erp_client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+volumes:
+  pgdata:

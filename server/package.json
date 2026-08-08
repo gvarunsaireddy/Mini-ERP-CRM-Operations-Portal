@@ -1,0 +1,48 @@
+{
+  "name": "erp-backend",
+  "version": "1.0.0",
+  "description": "Mini ERP/CRM Backend",
+  "private": true,
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "build": "nest build",
+    "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "latest",
+    "@nestjs/config": "latest",
+    "@nestjs/core": "latest",
+    "@nestjs/jwt": "latest",
+    "@nestjs/mapped-types": "^2.1.1",
+    "@nestjs/passport": "latest",
+    "@nestjs/platform-express": "latest",
+    "@nestjs/typeorm": "latest",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "latest",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "latest",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "latest",
+    "@nestjs/schematics": "latest",
+    "@nestjs/testing": "latest",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "latest",
+    "@types/express": "latest",
+    "@types/node": "^22.0.0",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/uuid": "^10.0.0",
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.0"
+  }
+}
