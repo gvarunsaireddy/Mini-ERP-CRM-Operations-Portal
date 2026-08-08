@@ -9,9 +9,14 @@ import { DataTable } from '../../../shared/components/DataTable';
 import StatusBadge from '../../../shared/components/StatusBadge';
 
 const DashboardPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // According to permission matrix: Add Customer & Add Product on Dashboard are restricted strictly to Admin
+  const canAddCustomerOnDashboard = hasRole(['Admin']);
+  const canAddProductOnDashboard = hasRole(['Admin']);
+  const canGenerateChallanOnDashboard = hasRole(['Admin', 'Sales']);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -108,15 +113,21 @@ const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link to="/customers/new" className="btn btn-secondary text-xs">
-              <Plus size={15} /> Add Customer
-            </Link>
-            <Link to="/products/new" className="btn btn-secondary text-xs">
-              <Plus size={15} /> Add Product
-            </Link>
-            <Link to="/challans/new" className="btn btn-primary text-xs">
-              <Plus size={15} /> Generate Challan
-            </Link>
+            {canAddCustomerOnDashboard && (
+              <Link to="/customers/new" className="btn btn-secondary text-xs">
+                <Plus size={15} /> Add Customer
+              </Link>
+            )}
+            {canAddProductOnDashboard && (
+              <Link to="/products/new" className="btn btn-secondary text-xs">
+                <Plus size={15} /> Add Product
+              </Link>
+            )}
+            {canGenerateChallanOnDashboard && (
+              <Link to="/challans/new" className="btn btn-primary text-xs">
+                <Plus size={15} /> Generate Challan
+              </Link>
+            )}
           </div>
         </div>
       </div>
