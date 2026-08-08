@@ -270,6 +270,14 @@ input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
 
+/* Explicit Select & Option High-Contrast Styling */
+select option {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  padding: 10px !important;
+  font-weight: 600;
+}
+
 label {
   display: block;
   font-size: var(--font-xs);

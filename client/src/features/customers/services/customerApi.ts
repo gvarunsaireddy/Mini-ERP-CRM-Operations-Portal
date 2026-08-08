@@ -28,12 +28,12 @@ export const customerApi = {
   },
   
   getFollowUps: async (customerId: string) => {
-    const response = await api.get<CustomerFollowUp[]>(`/customers/${customerId}/follow-ups`);
+    const response = await api.get<CustomerFollowUp[]>(`/customers/${customerId}/followups`);
     return response.data;
   },
   
   addFollowUp: async (customerId: string, data: Partial<CustomerFollowUp>) => {
-    const response = await api.post<CustomerFollowUp>(`/customers/${customerId}/follow-ups`, data);
+    const response = await api.post<CustomerFollowUp>(`/customers/${customerId}/followups`, data);
     return response.data;
   }
 };
