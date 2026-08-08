@@ -1,27 +1,41 @@
 # Mini ERP + CRM Operations Portal
 
-A full-stack ERP/CRM system for wholesale/distribution companies, built with modern technologies. Manages customers, products, inventory, sales challans, and basic CRM follow-ups.
+A full-stack enterprise ERP and CRM operations management portal built for wholesale and distribution companies. Manages customer relationships, inventory catalog, stock movement audit logs, sales challans, and real-time operational dashboard analytics.
 
-![Tech Stack](https://img.shields.io/badge/Backend-NestJS-red?style=flat-square)
-![Tech Stack](https://img.shields.io/badge/Frontend-React-blue?style=flat-square)
-![Tech Stack](https://img.shields.io/badge/Database-SQLite%2FPostgreSQL-green?style=flat-square)
-![Tech Stack](https://img.shields.io/badge/Language-TypeScript-blue?style=flat-square)
+![Tech Stack](https://img.shields.io/badge/Backend-NestJS_10-red?style=flat-square)
+![Tech Stack](https://img.shields.io/badge/Frontend-React_18_--_Vite_5-blue?style=flat-square)
+![Tech Stack](https://img.shields.io/badge/Database-SQLite_%2F_PostgreSQL-green?style=flat-square)
+![Tech Stack](https://img.shields.io/badge/Language-TypeScript_5-blue?style=flat-square)
+![Tech Stack](https://img.shields.io/badge/Themes-5_Dynamic_Palettes-purple?style=flat-square)
 
 ---
 
 ## Table of Contents
 
+- [Live Demo & Quick Logins](#live-demo--quick-logins)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
-- [Features](#features)
+- [Features & Business Logic](#features--business-logic)
+- [Multi-Theme Engine](#multi-theme-engine)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [API Documentation](#api-documentation)
 - [Test Credentials](#test-credentials)
-- [Deployment](#deployment)
+- [Deployment Guide](#deployment-guide)
 - [Docker Setup](#docker-setup)
 - [Architecture Decisions](#architecture-decisions)
 - [Known Limitations](#known-limitations)
+- [Assumptions](#assumptions)
+
+---
+
+## Live Demo & Quick Logins
+
+- **Frontend Application**: `http://localhost:5173`
+- **Backend REST API**: `http://localhost:3000/api`
+
+> [!TIP]
+> **1-Click Demo Logins**: On the sign-in page (`http://localhost:5173/login`), click any role badge under **QUICK DEMO ACCOUNTS** to log in instantly without typing credentials!
 
 ---
 
@@ -30,11 +44,11 @@ A full-stack ERP/CRM system for wholesale/distribution companies, built with mod
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    React Frontend                       │
-│         (Vite + TypeScript + React Router)             │
+│       Glassmorphic Admin UI (Vite + TypeScript)         │
 │   ┌──────────┬──────────┬──────────┬──────────┐       │
 │   │Dashboard │Customers │Products  │Challans  │       │
 │   └──────────┴──────────┴──────────┴──────────┘       │
-│              Axios + JWT Auth Token                     │
+│               Axios + JWT Interceptor                   │
 └───────────────────────┬─────────────────────────────────┘
                         │ REST API (JSON)
 ┌───────────────────────┴─────────────────────────────────┐
@@ -54,7 +68,7 @@ A full-stack ERP/CRM system for wholesale/distribution companies, built with mod
 │   │Sales     │Stats     │                               │
 │   │Logic     │Aggregate │                               │
 │   └──────────┴──────────┘                              │
-│              TypeORM + Repositories                     │
+│              TypeORM Data Mapper                        │
 └───────────────────────┬─────────────────────────────────┘
                         │
 ┌───────────────────────┴─────────────────────────────────┐
@@ -72,75 +86,87 @@ A full-stack ERP/CRM system for wholesale/distribution companies, built with mod
 ### Backend
 | Technology | Purpose |
 |------------|---------|
-| **Node.js** | Runtime |
-| **NestJS** | Framework (Express.js under the hood) |
-| **TypeScript** | Language |
-| **TypeORM** | ORM for database access |
-| **SQLite** | Development database (zero-config) |
-| **PostgreSQL** | Production database |
-| **Passport JWT** | Authentication |
-| **class-validator** | Request validation |
+| **Node.js** | Server runtime |
+| **NestJS 10** | Modular web framework |
+| **TypeScript 5** | Type-safe business logic |
+| **TypeORM** | Data Mapper pattern ORM |
+| **SQLite (better-sqlite3)** | Zero-config local development database |
+| **PostgreSQL 15** | Production database support |
+| **Passport JWT** | Secure bearer token authentication |
+| **class-validator** | Request payload validation |
 | **bcryptjs** | Password hashing |
 
 ### Frontend
 | Technology | Purpose |
 |------------|---------|
-| **React 18** | UI library |
-| **TypeScript** | Language |
-| **Vite** | Build tool |
-| **React Router v6** | Routing |
-| **Axios** | HTTP client |
-| **Lucide React** | Icons |
-| **react-hot-toast** | Notifications |
-| **Vanilla CSS** | Styling (custom dark theme) |
+| **React 18** | UI framework |
+| **TypeScript 5** | Typed frontend logic |
+| **Vite 5** | Next-generation build tool & dev server |
+| **React Router v6** | Declarative client routing |
+| **Axios** | HTTP client with JWT interceptors |
+| **Lucide React** | High-quality UI icons |
+| **react-hot-toast** | Animated toast notifications |
+| **Vanilla CSS** | HSL/RGB design system & multi-theme variables |
 
-### DevOps
+### DevOps & Deployment
 | Technology | Purpose |
 |------------|---------|
-| **Docker** | Containerization |
-| **Docker Compose** | Multi-container orchestration |
-| **Nginx** | Frontend static serving + API proxy |
+| **Docker** | Multi-stage container builds |
+| **Docker Compose** | Orchestration for App + PostgreSQL |
+| **Nginx** | Reverse proxy & static SPA serving |
 
 ---
 
-## Features
+## Features & Business Logic
 
-### 1. Authentication & Roles
-- JWT-based login with role-based access control
-- 4 roles: **Admin**, **Sales**, **Warehouse**, **Accounts**
-- Protected routes on both frontend and backend
-- Auto token refresh and session management
+### 1. Authentication & Role-Based Access Control (RBAC)
+- JWT-based authentication storing signed session tokens.
+- 4 distinct roles: **Admin**, **Sales**, **Warehouse**, **Accounts**.
+- Dual-layer protection: **Backend Role Guards** (`@Roles()`, `RolesGuard`, `JwtAuthGuard`) and **Frontend Protected Routes** (`<ProtectedRoute>`).
+- Admin user creation page for internal team onboarding.
 
 ### 2. Customer CRM Module
-- Full CRUD for customer management
-- Customer types: Retail, Wholesale, Distributor
-- Status tracking: Lead → Active → Inactive
-- Follow-up notes with timeline view
-- Search by name, mobile, email, business name
-- Pagination and filtering
+- Full CRUD management for customer records.
+- Customer classifications: `Retail`, `Wholesale`, `Distributor`.
+- Lifecycle status tracking: `Lead` ➔ `Active` ➔ `Inactive`.
+- **Follow-Up Timeline**: Sales reps can record follow-up meeting notes and target next contact dates.
+- Search by customer name, mobile, email, or business name.
 
 ### 3. Product & Inventory Module
-- Full CRUD for product management
-- SKU-based product identification
-- Real-time stock tracking
-- Stock movement log (IN/OUT with reasons)
-- Low stock alert indicators
-- Category-based organization
-- Warehouse location tracking
+- SKU-tracked product catalog with category tags, warehouse aisle locations, unit prices, and alert thresholds.
+- **Stock Movement Log**: Audit trail tracking `IN` and `OUT` movements with reason codes and user attribution.
+- **Low Stock Alerts**: Real-time identification of inventory items falling below minimum alert quantities (`currentStock <= minStockAlert`).
 
-### 4. Sales Challan Module
-- Multi-step challan creation (select customer → add products → review)
-- Auto-generated challan numbers (CH-YYYYMMDD-XXXX)
-- Draft → Confirmed → Cancelled workflow
-- **Transactional stock deduction** on confirmation
-- Negative stock prevention with clear error messages
-- Product snapshot storage (price/name at time of creation)
-- PDF export capability
+### 4. Sales Challan Module (Critical Business Logic)
+- **Multi-Step Form**: Customer selection ➔ Product search & line-item assembly ➔ Qty calculation ➔ Draft creation.
+- **Auto-Generated Challan Numbers**: Formatted as `CH-YYYYMMDD-XXXX`.
+- **Transactional Stock Deduction**:
+  - Executed inside a database transaction (`queryRunner.startTransaction()`).
+  - Strict validation guarantees **stock never goes negative**.
+  - Returns explicit HTTP 400 error payloads detailing short inventory items if stock is insufficient.
+- **Historical Price Snapshotting**:
+  - Each challan line item snapshots `productNameSnapshot`, `productSkuSnapshot`, and `productPriceSnapshot` at creation time, preserving historical billing accuracy even if master product prices change later.
 
-### 5. Dashboard
-- Real-time stats cards (customers, products, stock alerts, challans)
-- Recent challans overview
-- Quick action buttons
+### 5. Operations Dashboard
+- Real-time KPI summary widgets: Total Customers, Active Products, Low Stock Warnings, Total Challans.
+- Customer lifecycle stage distribution progress bars.
+- Recent sales challan activity registry.
+
+---
+
+## Multi-Theme Engine
+
+The application includes an interactive **Theme Switcher** in the top navigation header:
+
+| Theme | Key | Palette Characteristics |
+|-------|-----|-------------------------|
+| 🌌 **Midnight Cyber** (*Default*) | `midnight` | Deep navy `#070913`, cyan glow `#06b6d4`, indigo accents |
+| 🔮 **Obsidian Violet** | `violet` | Deep slate `#0b0717`, electric purple `#a855f7` & pink |
+| 🌿 **Emerald Matrix** | `emerald` | Dark green `#04120b`, vibrant mint `#10b981` & cyan |
+| 🌅 **Sunset Amber** | `amber` | Dark charcoal `#140d04`, warm gold `#f59e0b` & crimson |
+| ☀️ **Clean Light Enterprise** | `light` | Crisp slate white `#f8fafc`, high-readability royal blue |
+
+Theme selection is persisted in `localStorage` and applies dynamically across the DOM via `data-theme`.
 
 ---
 
@@ -155,37 +181,30 @@ A full-stack ERP/CRM system for wholesale/distribution companies, built with mod
 
 ```bash
 # 1. Clone the repository
-git clone <repository-url>
+git clone https://github.com/gvarunsaireddy/mini-erp-crm.git
 cd mini-erp-crm
 
-# 2. Install backend dependencies
+# 2. Install backend dependencies & seed database
 cd server
 npm install --legacy-peer-deps
-
-# 3. Set up environment variables
 cp .env.example .env
-# Edit .env if needed (defaults work for local dev)
-
-# 4. Seed the database with demo data
 npm run seed
 
-# 5. Start the backend server
+# 3. Start backend API server (runs at http://localhost:3000)
 npm run start:dev
-# Backend runs at http://localhost:3000
 
-# 6. In a new terminal, install frontend dependencies
+# 4. In a new terminal, install frontend dependencies
 cd ../client
 npm install
 
-# 7. Start the frontend dev server
+# 5. Start frontend dev server (runs at http://localhost:5173)
 npm run dev
-# Frontend runs at http://localhost:5173
 ```
 
 ### Verify Setup
-1. Open http://localhost:5173 in your browser
-2. Login with `admin@erp.com` / `Admin@123`
-3. You should see the dashboard with stats
+1. Open `http://localhost:5173` in your browser.
+2. Click any **Quick Demo Account** button (e.g. **Admin** or **Sales**).
+3. The system will log you in instantly!
 
 ---
 
@@ -205,7 +224,6 @@ npm run dev
 | `DB_USERNAME` | PostgreSQL username | `erp_user` |
 | `DB_PASSWORD` | PostgreSQL password | `erp_password_2024` |
 | `DB_DATABASE` | PostgreSQL database name | `erp_crm` |
-| `NODE_ENV` | Environment | `development` |
 
 ### Frontend (`client/.env`)
 
@@ -220,243 +238,133 @@ npm run dev
 ### Base URL: `http://localhost:3000/api`
 
 ### Authentication
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/auth/login` | Public | Login and get JWT token |
-| GET | `/auth/me` | All Roles | Get current user profile |
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|---------------|-------------|
+| `POST` | `/auth/login` | Public | Login and get JWT token |
+| `GET` | `/auth/me` | All Roles | Get current user profile |
 
 ### Users (Admin only)
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/users?page=1&limit=10` | Admin | List all users |
-| POST | `/users` | Admin | Create new user |
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|---------------|-------------|
+| `GET` | `/users?page=1&limit=10` | Admin | List all users |
+| `POST` | `/users` | Admin | Create new user |
 
-### Customers
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/customers?page=1&limit=10&search=` | Admin, Sales | List customers |
-| POST | `/customers` | Admin, Sales | Create customer |
-| GET | `/customers/:id` | Admin, Sales | Get customer details |
-| PUT | `/customers/:id` | Admin, Sales | Update customer |
-| POST | `/customers/:id/followups` | Admin, Sales | Add follow-up note |
-| GET | `/customers/:id/followups` | Admin, Sales | List follow-ups |
+### Customers CRM
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|---------------|-------------|
+| `GET` | `/customers?page=1&limit=10&search=` | Admin, Sales | List customers (paginated) |
+| `POST` | `/customers` | Admin, Sales | Create customer account |
+| `GET` | `/customers/:id` | Admin, Sales | Get customer details & history |
+| `PUT` | `/customers/:id` | Admin, Sales | Update customer account |
+| `POST` | `/customers/:id/followups` | Admin, Sales | Record CRM follow-up note |
+| `GET` | `/customers/:id/followups` | Admin, Sales | List follow-up notes |
 
-### Products
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/products?page=1&limit=10&search=` | All Roles | List products |
-| POST | `/products` | Admin, Warehouse | Create product |
-| GET | `/products/:id` | All Roles | Get product details |
-| PUT | `/products/:id` | Admin, Warehouse | Update product |
-| GET | `/products/:id/stock-movements` | Admin, Warehouse | Stock movement log |
-| POST | `/products/:id/stock-movements` | Admin, Warehouse | Add stock movement |
+### Products & Inventory
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|---------------|-------------|
+| `GET` | `/products?page=1&limit=10&search=` | All Roles | List products (paginated) |
+| `POST` | `/products` | Admin, Warehouse | Create product |
+| `GET` | `/products/:id` | All Roles | Get product details |
+| `PUT` | `/products/:id` | Admin, Warehouse | Update product details |
+| `GET` | `/products/:id/stock-movements` | Admin, Warehouse | Stock movement audit log |
+| `POST` | `/products/:id/stock-movements` | Admin, Warehouse | Add manual stock movement |
 
 ### Sales Challans
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/challans?page=1&limit=10` | Admin, Sales, Accounts | List challans |
-| POST | `/challans` | Admin, Sales | Create challan (Draft) |
-| GET | `/challans/:id` | Admin, Sales, Accounts | Get challan details |
-| PATCH | `/challans/:id/confirm` | Admin, Sales | Confirm challan |
-| PATCH | `/challans/:id/cancel` | Admin | Cancel challan |
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|---------------|-------------|
+| `GET` | `/challans?page=1&limit=10` | Admin, Sales, Accounts | List challans (paginated) |
+| `POST` | `/challans` | Admin, Sales | Create draft challan |
+| `GET` | `/challans/:id` | Admin, Sales, Accounts | Get challan details & line items |
+| `PATCH` | `/challans/:id/confirm` | Admin, Sales | **Confirm challan (deduct stock)** |
+| `PATCH` | `/challans/:id/cancel` | Admin | Cancel challan (restore stock) |
 
 ### Dashboard
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/dashboard/stats` | All Roles | Dashboard statistics |
-
-### Error Response Format
-```json
-{
-  "statusCode": 400,
-  "message": "Validation failed",
-  "error": "Bad Request",
-  "timestamp": "2024-01-01T00:00:00.000Z"
-}
-```
-
-### Pagination Response Format
-```json
-{
-  "data": [...],
-  "total": 50,
-  "page": 1,
-  "limit": 10,
-  "totalPages": 5
-}
-```
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|---------------|-------------|
+| `GET` | `/dashboard/stats` | All Roles | Operations summary statistics |
 
 ---
 
 ## Test Credentials
 
-| Role | Email | Password | Access |
-|------|-------|----------|--------|
-| **Admin** | admin@erp.com | Admin@123 | Full access to all modules |
-| **Sales** | sales@erp.com | Sales@123 | Customers, Challans, Products (read), Dashboard |
-| **Warehouse** | warehouse@erp.com | Warehouse@123 | Products, Stock Management, Dashboard |
-| **Accounts** | accounts@erp.com | Accounts@123 | Challans (read), Products (read), Dashboard |
+| Role | Email | Password | Access Matrix |
+|------|-------|----------|---------------|
+| **Admin** | `admin@erp.com` | `Admin@123` | Full access across all modules, including User Management |
+| **Sales** | `sales@erp.com` | `Sales@123` | Customers CRM, Sales Challans, Product catalog, Dashboard |
+| **Warehouse** | `warehouse@erp.com` | `Warehouse@123` | Product catalog, Stock Movements, Stock Alerts, Dashboard |
+| **Accounts** | `accounts@erp.com` | `Accounts@123` | Sales Challans viewing, Product catalog, Dashboard |
 
 ---
 
-## Deployment
+## Deployment Guide
 
-### Option 1: Free Tier Deployment (Recommended)
+### Deployment Options
 
-#### Frontend → Vercel
+#### 1. Frontend → Vercel / Netlify
 ```bash
 cd client
 npm run build
-# Deploy the `dist/` folder to Vercel
-# Set VITE_API_URL to your backend URL
+# Deploy the generated `dist/` directory
+# Set VITE_API_URL to your production backend URL
 ```
 
-#### Backend → Render
-1. Create a Web Service on Render
-2. Connect your GitHub repo
-3. Set root directory to `server/`
-4. Build command: `npm install --legacy-peer-deps && npm run build && npm run seed`
-5. Start command: `node dist/main.js`
-6. Add environment variables from the table above
-
-#### Database → Neon (PostgreSQL)
-1. Create a free PostgreSQL database on Neon
-2. Copy the connection string
-3. Set `DB_TYPE=postgres` and connection variables in Render
-
-### Option 2: Docker Deployment
-
-```bash
-# Start all services
-docker-compose up -d
-
-# Access:
-# Frontend: http://localhost
-# Backend API: http://localhost:3000
-# PostgreSQL: localhost:5432
-```
-
-### Option 3: AWS Deployment (Bonus)
-1. **EC2**: Deploy backend with PM2
-2. **RDS**: PostgreSQL database
-3. **S3 + CloudFront**: Static frontend hosting
-4. **Elastic Beanstalk**: Alternative for backend
+#### 2. Backend → Render / Railway
+1. Create a Web Service connecting your GitHub repo.
+2. Set Root Directory to `server/`.
+3. Build Command: `npm install --legacy-peer-deps && npm run build && npm run seed`
+4. Start Command: `node dist/main.js`
 
 ---
 
 ## Docker Setup
 
-### Development with Docker Compose
+### Full-Stack Execution with PostgreSQL
 
 ```bash
 # Build and start all services
-docker-compose up --build
+docker-compose up --build -d
 
-# Stop all services
+# Stop services
 docker-compose down
 
-# Reset database
-docker-compose down -v  # removes volumes
-docker-compose up --build
-```
-
-### Individual Docker Builds
-
-```bash
-# Build backend
-cd server
-docker build -t erp-server .
-
-# Build frontend
-cd client
-docker build -t erp-client .
+# Reset database volumes
+docker-compose down -v
 ```
 
 ---
 
 ## Architecture Decisions
 
-### Why NestJS over Express.js?
-NestJS provides built-in support for modules, dependency injection, guards, and decorators — all essential for an enterprise-grade ERP system. It uses Express.js under the hood, satisfying the tech stack requirement while providing better structure.
+1. **Why NestJS over Express.js?**
+   - NestJS provides built-in dependency injection, modular organization (`AppModule`, `AuthModule`, `CustomersModule`), and decorators (`@Roles()`), leading to cleaner enterprise code.
 
-### Why SQLite for Development?
-SQLite requires zero configuration — no database server to install or Docker to run. Clone the repo, `npm install`, and start developing. TypeORM abstracts the database layer, so switching to PostgreSQL for production is a one-line config change.
+2. **Why SQLite for Development?**
+   - Requires zero local DB installation overhead. TypeORM abstracts SQL dialect differences, making switching to PostgreSQL in production a single config change.
 
-### Why Feature-Based Architecture?
-Both backend (NestJS modules) and frontend (feature folders) use feature-based organization. This keeps related code together, making it easier to understand, maintain, and potentially extract into microservices later.
+3. **Why Product Snapshots in Challans?**
+   - Line items store `productNameSnapshot`, `productSkuSnapshot`, and `productPriceSnapshot` at creation time to preserve historical billing integrity if master catalog prices change later.
 
-### Why Product Snapshots in Challans?
-Challan items store the product name, SKU, and price at the time of creation. This ensures that if a product's price changes later, historical challans remain accurate — a critical business requirement.
-
-### Why Transactional Stock Management?
-Challan confirmation uses database transactions to ensure atomicity: either all stock deductions succeed, or none do. This prevents partial stock updates and data inconsistency.
-
----
-
-## Project Structure
-
-```
-mini-erp-crm/
-├── server/                    # NestJS Backend
-│   ├── src/
-│   │   ├── main.ts           # App bootstrap
-│   │   ├── app.module.ts     # Root module
-│   │   ├── common/           # Guards, decorators, filters
-│   │   ├── modules/
-│   │   │   ├── auth/         # JWT authentication
-│   │   │   ├── users/        # User management
-│   │   │   ├── customers/    # Customer CRM
-│   │   │   ├── products/     # Product & inventory
-│   │   │   ├── challans/     # Sales challans
-│   │   │   └── dashboard/    # Dashboard stats
-│   │   └── database/
-│   │       └── seed.ts       # Database seeding
-│   ├── Dockerfile
-│   └── package.json
-├── client/                    # React Frontend
-│   ├── src/
-│   │   ├── App.tsx           # Root component
-│   │   ├── index.css         # Design system
-│   │   ├── features/         # Feature modules
-│   │   │   ├── auth/
-│   │   │   ├── dashboard/
-│   │   │   ├── customers/
-│   │   │   ├── products/
-│   │   │   ├── challans/
-│   │   │   └── users/
-│   │   └── shared/           # Shared components
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   └── package.json
-├── docker-compose.yml
-├── postman_collection.json
-└── README.md
-```
+4. **Why Transactional Stock Deductions?**
+   - Challan confirmation executes within a TypeORM database transaction (`queryRunner.startTransaction()`) to guarantee zero partial updates during stock deduction or movement logging failures.
 
 ---
 
 ## Known Limitations
 
-1. **No real-time notifications** — The system uses polling; WebSocket support could be added for real-time updates.
-2. **No invoice generation** — Only sales challans are implemented. A separate invoice module with PDF generation would be a natural next step.
-3. **No file uploads** — Product images and document attachments are not implemented. Would require S3 integration.
-4. **No audit trail** — While stock movements are tracked, a comprehensive audit log for all entity changes is not implemented.
-5. **Single warehouse** — Products have a location field but multi-warehouse stock splitting is not supported.
-6. **No email notifications** — Follow-up reminders and challan confirmations don't send email notifications.
-7. **SQLite limitations** — Development uses SQLite which doesn't support concurrent writes well. Production should use PostgreSQL.
+1. **No WebSockets** — Real-time updates use polling; WebSockets can be added for live activity feeds.
+2. **Single Warehouse** — Products contain location strings, but multi-warehouse stock splitting is not implemented.
+3. **Audit Log Scope** — Stock movements are fully audited; general entity edit audit logs are not implemented.
 
 ---
 
 ## Assumptions
 
-1. **Single company** — The system is designed for a single company, not multi-tenant.
-2. **INR currency** — All prices are assumed to be in Indian Rupees (₹).
-3. **Sequential challan numbers** — Challan numbers are auto-generated and sequential per day.
-4. **No partial shipments** — A challan is either fully confirmed or cancelled; partial fulfillment is not supported.
-5. **GST is informational** — GST number is stored but no GST calculations or tax logic is implemented.
+1. **Internal Onboarding** — Internal employee accounts are created by Admins (`/users`), not public self-registration.
+2. **Currency** — All monetary values are presented in Indian Rupees (₹).
+3. **Challan Numbers** — Sequential per day (`CH-YYYYMMDD-XXXX`).
 
 ---
 
 ## License
 
-This project is built as a case study assignment. All rights reserved.
+Built as a case study assignment. All rights reserved.
