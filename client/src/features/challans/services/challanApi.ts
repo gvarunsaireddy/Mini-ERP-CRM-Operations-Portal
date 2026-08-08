@@ -16,18 +16,18 @@ export const challanApi = {
     return response.data;
   },
   
-  create: async (data: Partial<SalesChallan>) => {
+  create: async (data: { customerId: string; items: { productId: string; quantity: number }[] }) => {
     const response = await api.post<SalesChallan>('/challans', data);
     return response.data;
   },
   
   confirm: async (id: string) => {
-    const response = await api.post<SalesChallan>(`/challans/${id}/confirm`);
+    const response = await api.patch<SalesChallan>(`/challans/${id}/confirm`);
     return response.data;
   },
   
   cancel: async (id: string) => {
-    const response = await api.post<SalesChallan>(`/challans/${id}/cancel`);
+    const response = await api.patch<SalesChallan>(`/challans/${id}/cancel`);
     return response.data;
   }
 };

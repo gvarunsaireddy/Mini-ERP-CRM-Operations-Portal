@@ -62,11 +62,10 @@ const ChallanCreatePage: React.FC = () => {
     setSubmitting(true);
     try {
       const challanData = {
-        customer: selectedCustomer.id,
+        customerId: selectedCustomer.id,
         items: selectedItems.map(i => ({
           productId: i.product.id,
-          quantity: i.quantity,
-          lineTotal: i.quantity * i.product.unitPrice
+          quantity: Number(i.quantity)
         }))
       };
       
@@ -74,7 +73,9 @@ const ChallanCreatePage: React.FC = () => {
       toast.success('Challan created successfully');
       navigate(`/challans/${newChallan.id}`);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to create challan');
+      let rawMsg = error.response?.data?.message || error.message || 'Failed to create challan';
+      if (Array.isArray(rawMsg)) rawMsg = rawMsg.join(', ');
+      toast.error(rawMsg);
     } finally {
       setSubmitting(false);
     }

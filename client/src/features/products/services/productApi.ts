@@ -27,12 +27,16 @@ export const productApi = {
   },
   
   getStockMovements: async (productId: string, page = 1, limit = 10) => {
-    const response = await api.get<PaginatedResponse<StockMovement>>(`/products/${productId}/stock?page=${page}&limit=${limit}`);
+    const response = await api.get<PaginatedResponse<StockMovement>>(`/products/${productId}/stock-movements?page=${page}&limit=${limit}`);
     return response.data;
   },
   
-  addStockMovement: async (productId: string, data: Partial<StockMovement>) => {
-    const response = await api.post<StockMovement>(`/products/${productId}/stock`, data);
+  addStockMovement: async (productId: string, data: { quantity: number; movementType: string; reason: string }) => {
+    const response = await api.post<StockMovement>(`/products/${productId}/stock-movements`, {
+      quantity: Number(data.quantity),
+      movementType: data.movementType,
+      reason: data.reason
+    });
     return response.data;
   }
 };

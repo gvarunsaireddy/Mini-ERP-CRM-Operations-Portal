@@ -67,8 +67,10 @@ const ProductDetailPage: React.FC = () => {
       setStockForm({ quantity: 0, movementType: 'IN', reason: '' });
       fetchProductData();
       fetchMovements();
-    } catch (error) {
-      toast.error('Failed to update stock');
+    } catch (error: any) {
+      let rawMsg = error.response?.data?.message || error.message || 'Failed to update stock';
+      if (Array.isArray(rawMsg)) rawMsg = rawMsg.join(', ');
+      toast.error(rawMsg);
     } finally {
       setSubmitting(false);
     }
